@@ -100,6 +100,17 @@ contract DeployFlopVaultTest is Test {
         assertEq(FlopVault(d.vault).balanceOf(me), 0);
     }
 
+    /// Adversarial: if the recorded miner is really the depositor, the miner-payment check must be what fails first.
+    function test_smokeFlagsMinerWiredToDepositor() public {
+        vm.chainId(RHC_TESTNET);
+        FlopVaultDeployment.Deployment memory d = deployer.deploy(pk);
+        vm.prank(me);
+        MockComputeStrategy(d.strategy).setMiner(me, true);
+        d.miner = me;
+        vm.expectRevert(abi.encodeWithSelector(SmokeFlopVault.SmokeMismatch.selector, "miner paid", 1_000e6, 40e6));
+        smoker.smoke(pk, d);
+    }
+
     /// Two smoke rounds on one deployment: the second still pays exactly once and does not inherit the first's escrow.
     function test_smokeTwiceOnSameDeployment() public {
         vm.chainId(RHC_TESTNET);

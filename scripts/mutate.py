@@ -43,6 +43,18 @@ MUTANTS = [
     ("M15", "market: borrow shares round down (borrower favored)", "src/IsolatedMarket.sol",
      "shares = _toSharesUp(assets, totalBorrowAssets, totalBorrowShares);",
      "shares = _toSharesDown(assets, totalBorrowAssets, totalBorrowShares);"),
+    ("M16", "test token: wallet-to-wallet transfers allowed", "src/mocks/TestToken.sol",
+     "if (from != address(0) && !isEndpoint[from] && !isEndpoint[to]) revert NotTradable();", ""),
+    ("M17", "test token: only the sender side counts as endpoint", "src/mocks/TestToken.sol",
+     "&& !isEndpoint[from] && !isEndpoint[to])", "&& !isEndpoint[from])"),
+    ("M18", "test token: mint cap off by one", "src/mocks/TestToken.sol",
+     "if (amount > mintCapPerCall) revert", "if (amount > mintCapPerCall + 1) revert"),
+    ("M19", "deploy: chain guard removed", "script/FlopVaultDeployment.sol",
+     "if (block.chainid != RHC_TESTNET_CHAIN_ID) revert WrongChain(block.chainid);", ""),
+    ("M20", "deploy: tUSDC never allowlists the strategy", "script/DeployFlopVault.s.sol",
+     "        usdc.setEndpoint(address(strategy), true);\n", ""),
+    ("M21", "smoke: miner payment check removed", "script/SmokeFlopVault.s.sol",
+     '_check("miner paid", r.paidToMiner, EXPECTED_PAID);', ""),
 ]
 
 def run(cmd):
