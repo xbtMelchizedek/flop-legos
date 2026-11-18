@@ -2,15 +2,20 @@
 pragma solidity 0.8.26;
 
 import {VaultFixture} from "../utils/VaultFixture.sol";
-import {ComputeVault} from "../../src/ComputeVault.sol";
+import {FlopVault} from "../../src/FlopVault.sol";
 import {Owned2Step} from "../../src/Owned2Step.sol";
 import {MockComputeStrategy} from "../../src/mocks/MockComputeStrategy.sol";
 import {IComputeStrategy} from "../../src/interfaces/IComputeStrategy.sol";
 import {FeeOnTransferToken, ReentrantToken} from "../utils/Mocks.sol";
 import {ReentrancyGuardTransient} from "solady/utils/ReentrancyGuardTransient.sol";
 
-contract ComputeVaultTest is VaultFixture {
+contract FlopVaultTest is VaultFixture {
     // ---- golden vectors ----
+
+    function test_shareTokenIsBrandedFlopVault() public view {
+        assertEq(vault.name(), "FlopVault (unaudited prototype)");
+        assertEq(vault.symbol(), "FLOPV");
+    }
 
     function test_firstDepositMintsVirtualOffsetShares() public {
         uint256 shares = _deposit(alice, 1e18);
@@ -66,28 +71,28 @@ contract ComputeVaultTest is VaultFixture {
     function test_feeOnTransferTokenRefused() public {
         FeeOnTransferToken fee = new FeeOnTransferToken();
         MockComputeStrategy s = new MockComputeStrategy(address(fee), governor, keeper, settler, EPOCH_CAP, MAX_PRICE);
-        ComputeVault v = new ComputeVault(address(fee), 18, s, governor, CAP);
+        FlopVault v = new FlopVault(address(fee), 18, s, governor, CAP);
         fee.mint(alice, 100e18);
         vm.startPrank(alice);
         fee.approve(address(v), type(uint256).max);
-        vm.expectRevert(ComputeVault.FeeOnTransferRefused.selector);
+        vm.expectRevert(FlopVault.FeeOnTransferRefused.selector);
         v.deposit(100e18, alice);
         vm.stopPrank();
     }
 
     function test_noCodeAssetRefused() public {
-        vm.expectRevert(ComputeVault.NoCode.selector);
-        new ComputeVault(makeAddr("eoa"), 18, strategy, governor, CAP);
+        vm.expectRevert(FlopVault.NoCode.selector);
+        new FlopVault(makeAddr("eoa"), 18, strategy, governor, CAP);
     }
 
     function test_reentrantTokenCannotReenterDeposit() public {
         ReentrantToken hook = new ReentrantToken();
         MockComputeStrategy s = new MockComputeStrategy(address(hook), governor, keeper, settler, EPOCH_CAP, MAX_PRICE);
-        ComputeVault v = new ComputeVault(address(hook), 18, s, governor, CAP);
+        FlopVault v = new FlopVault(address(hook), 18, s, governor, CAP);
         hook.mint(alice, 10e18);
         vm.prank(alice);
         hook.approve(address(v), type(uint256).max);
-        hook.arm(address(v), abi.encodeCall(ComputeVault.deposit, (1e18, alice)));
+        hook.arm(address(v), abi.encodeCall(FlopVault.deposit, (1e18, alice)));
         vm.prank(alice);
         uint256 shares = v.deposit(1e18, alice);
         assertFalse(hook.reentryOk());
@@ -155,7 +160,7 @@ contract ComputeVaultTest is VaultFixture {
 
     function test_onlyKeeperAllocates() public {
         _deposit(alice, 10e18);
-        vm.expectRevert(ComputeVault.NotKeeper.selector);
+        vm.expectRevert(FlopVault.NotKeeper.selector);
         vm.prank(eve);
         vault.allocate(1e18);
     }
@@ -174,7 +179,7 @@ contract ComputeVaultTest is VaultFixture {
         vm.prank(guardian);
         vault.pause();
         _fund(bob, 1e18);
-        vm.expectRevert(ComputeVault.ExceedsMaxDeposit.selector);
+        vm.expectRevert(FlopVault.ExceedsMaxDeposit.selector);
         vm.prank(bob);
         vault.deposit(1e18, bob);
         vm.prank(alice);
@@ -201,7 +206,7 @@ contract ComputeVaultTest is VaultFixture {
         vm.prank(governor);
         vault.setDepositCap(5e18);
         _fund(alice, 6e18);
-        vm.expectRevert(ComputeVault.ExceedsMaxDeposit.selector);
+        vm.expectRevert(FlopVault.ExceedsMaxDeposit.selector);
         vm.prank(alice);
         vault.deposit(6e18, alice);
     }

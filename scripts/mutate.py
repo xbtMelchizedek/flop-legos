@@ -6,18 +6,18 @@ import pathlib, re, shutil, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MUTANTS = [
-    ("M1", "vault: previewDeposit rounds up", "src/ComputeVault.sol",
+    ("M1", "vault: previewDeposit rounds up", "src/FlopVault.sol",
      "    function previewDeposit(uint256 assets) public view returns (uint256) {\n        return assets.fullMulDiv(",
      "    function previewDeposit(uint256 assets) public view returns (uint256) {\n        return assets.fullMulDivUp("),
-    ("M2", "vault: virtual shares 1e6 -> 1", "src/ComputeVault.sol",
+    ("M2", "vault: virtual shares 1e6 -> 1", "src/FlopVault.sol",
      "VIRTUAL_SHARES = 1e6;", "VIRTUAL_SHARES = 1;"),
-    ("M3", "vault: drop nonReentrant on deposit", "src/ComputeVault.sol",
+    ("M3", "vault: drop nonReentrant on deposit", "src/FlopVault.sol",
      "function deposit(uint256 assets, address receiver) external nonReentrant",
      "function deposit(uint256 assets, address receiver) external"),
-    ("M4", "vault: exits priced at full mark (incl. reserved escrow)", "src/ComputeVault.sol",
+    ("M4", "vault: exits priced at full mark (incl. reserved escrow)", "src/FlopVault.sol",
      "        return idle + strategy.freeAssets();\n    }\n\n    /// Rounds down. Informational",
      "        return idle + strategy.totalAssets();\n    }\n\n    /// Rounds down. Informational"),
-    ("M5", "vault: accept fee-on-transfer shortfall", "src/ComputeVault.sol",
+    ("M5", "vault: accept fee-on-transfer shortfall", "src/FlopVault.sol",
      "        if (SafeTransferLib.balanceOf(asset, address(this)) - before != assets) revert FeeOnTransferRefused();\n        idle += assets;\n    }\n\n    function _pullFromStrategy",
      "        idle += assets;\n    }\n\n    function _pullFromStrategy"),
     ("M6", "strategy: miner payment not capped at escrow", "src/mocks/MockComputeStrategy.sol",

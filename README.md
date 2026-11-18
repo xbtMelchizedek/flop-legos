@@ -1,4 +1,4 @@
-# flop-legos
+# FlopVault (flop-legos)
 
 > **Unaudited prototype. Not deployed anywhere. There is no token.** Local Foundry tests against mocks only.
 > `MockFLOP` is a test stand-in; FLOP Labs says there is no FLOP token yet, and this repo does not create one.
@@ -7,7 +7,7 @@ Money legos for agent compute, sketched as Solidity. Two pieces:
 
 | contract | shape | what it does |
 |---|---|---|
-| `ComputeVault` | ERC-4626, yVault-style | Agents pool one compute budget. A keeper allocates it to a strategy that reserves escrow with allowlisted miners; a settlement verdict pays the miner for verified work and refunds the rest. |
+| `FlopVault` | ERC-4626, yVault-style | Agents pool one compute budget. A keeper allocates it to a strategy that reserves escrow with allowlisted miners; a settlement verdict pays the miner for verified work and refunds the rest. |
 | `MockComputeStrategy` | mock of a FLOP compute channel | escrow → verdict → miner paid at the channel price (rounded down) → remainder refunded; permissionless refund after timeout; per-epoch spend cap like FLOP's agent-wallet daily cap. |
 | `IsolatedMarket` | isolated lending market (shape learned from Morpho Blue, code ours) | One collateral, one loan asset, one oracle, fixed LLTV / incentive / rate, no owner. Bad debt is written off against suppliers. |
 | `BandedOracle` | two feeds, one band | Returns the primary price only if a second feed agrees within the band, both are fresh and nonzero. Otherwise reverts. |

@@ -11,7 +11,7 @@ FLOP is a Substrate L1, "non-EVM, not Turing-complete", with "no smart contracts
 the EVM half. The FLOP half is an agent wallet (spend caps, allowlist, circuit breaker; yellowpaper §6.2) that an
 off-chain operator drives, and the strategy mock stands in for it.
 
-## 1. ComputeVault
+## 1. FlopVault
 
 ### 1.1 Roles
 - **owner** (two-step, 48 h expiry): sets keeper, guardian, deposit cap; unpauses.
