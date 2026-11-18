@@ -1,0 +1,24 @@
+name: ci
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+      - run: forge fmt --check src test
+      - run: forge build --sizes
+      - run: forge test -vvv
+        env:
+          FOUNDRY_PROFILE: ci
+      - run: python3 scripts/secret_scan.py
