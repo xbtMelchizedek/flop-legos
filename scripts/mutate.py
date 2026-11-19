@@ -6,18 +6,18 @@ import pathlib, re, shutil, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MUTANTS = [
-    ("M1", "vault: previewDeposit rounds up", "src/ComputeVault.sol",
+    ("M1", "vault: previewDeposit rounds up", "src/FlopVault.sol",
      "    function previewDeposit(uint256 assets) public view returns (uint256) {\n        return assets.fullMulDiv(",
      "    function previewDeposit(uint256 assets) public view returns (uint256) {\n        return assets.fullMulDivUp("),
-    ("M2", "vault: virtual shares 1e6 -> 1", "src/ComputeVault.sol",
+    ("M2", "vault: virtual shares 1e6 -> 1", "src/FlopVault.sol",
      "VIRTUAL_SHARES = 1e6;", "VIRTUAL_SHARES = 1;"),
-    ("M3", "vault: drop nonReentrant on deposit", "src/ComputeVault.sol",
+    ("M3", "vault: drop nonReentrant on deposit", "src/FlopVault.sol",
      "function deposit(uint256 assets, address receiver) external nonReentrant",
      "function deposit(uint256 assets, address receiver) external"),
-    ("M4", "vault: exits priced at full mark (incl. reserved escrow)", "src/ComputeVault.sol",
+    ("M4", "vault: exits priced at full mark (incl. reserved escrow)", "src/FlopVault.sol",
      "        return idle + strategy.freeAssets();\n    }\n\n    /// Rounds down. Informational",
      "        return idle + strategy.totalAssets();\n    }\n\n    /// Rounds down. Informational"),
-    ("M5", "vault: accept fee-on-transfer shortfall", "src/ComputeVault.sol",
+    ("M5", "vault: accept fee-on-transfer shortfall", "src/FlopVault.sol",
      "        if (SafeTransferLib.balanceOf(asset, address(this)) - before != assets) revert FeeOnTransferRefused();\n        idle += assets;\n    }\n\n    function _pullFromStrategy",
      "        idle += assets;\n    }\n\n    function _pullFromStrategy"),
     ("M6", "strategy: miner payment not capped at escrow", "src/mocks/MockComputeStrategy.sol",
@@ -43,6 +43,18 @@ MUTANTS = [
     ("M15", "market: borrow shares round down (borrower favored)", "src/IsolatedMarket.sol",
      "shares = _toSharesUp(assets, totalBorrowAssets, totalBorrowShares);",
      "shares = _toSharesDown(assets, totalBorrowAssets, totalBorrowShares);"),
+    ("M16", "test token: wallet-to-wallet transfers allowed", "src/mocks/TestToken.sol",
+     "if (from != address(0) && !isEndpoint[from] && !isEndpoint[to]) revert NotTradable();", ""),
+    ("M17", "test token: only the sender side counts as endpoint", "src/mocks/TestToken.sol",
+     "&& !isEndpoint[from] && !isEndpoint[to])", "&& !isEndpoint[from])"),
+    ("M18", "test token: mint cap off by one", "src/mocks/TestToken.sol",
+     "if (amount > mintCapPerCall) revert", "if (amount > mintCapPerCall + 1) revert"),
+    ("M19", "deploy: chain guard removed", "script/FlopVaultDeployment.sol",
+     "if (block.chainid != RHC_TESTNET_CHAIN_ID) revert WrongChain(block.chainid);", ""),
+    ("M20", "deploy: tUSDC never allowlists the strategy", "script/DeployFlopVault.s.sol",
+     "        usdc.setEndpoint(address(strategy), true);\n", ""),
+    ("M21", "smoke: miner payment check removed", "script/SmokeFlopVault.s.sol",
+     '_check("miner paid", r.paidToMiner, EXPECTED_PAID);', ""),
 ]
 
 def run(cmd):

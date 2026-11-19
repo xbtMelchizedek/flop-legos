@@ -6,7 +6,7 @@ the run. A model-forbidden call is tried, and if it is accepted it counts as a b
 
 ## Invariants (plain words)
 
-ComputeVault (`test/invariant/ComputeVault.invariant.t.sol`):
+FlopVault (`test/invariant/FlopVault.invariant.t.sol`):
 1. totalAssets equals deposits minus withdrawals minus miner payouts, exactly.
 2. Tokens held by the vault and strategy equal totalAssets plus donations. Donations never count.
 3. Strategy reserved equals the sum of open escrows in the model, and free plus reserved equals strategy totalAssets.
@@ -36,5 +36,20 @@ and 486 borrows succeeded. Liquidation and bad debt also have direct unit tests.
 - Borrow shares minted satisfy `shares·(A+1) ≥ assets·(S+1e6)`, so rounding goes against the borrower.
 - Supply then withdraw never profits.
 
+- TestToken: a transfer succeeds iff one side is an allowlisted endpoint (fuzzed over both flags).
+
+## Deploy and smoke (Robinhood Chain testnet scripts)
+`test/script/DeployFlopVault.t.sol` runs the same `deploy` and `smoke` code the scripts run, in-process:
+- Refuses chain ids 4663 (Robinhood mainnet) and 31337; accepts only 46630.
+- Every contract is wired as intended (asset, strategy, vault, roles, oracle, endpoints, decimals, test peg).
+- Deployed mocks cannot move wallet-to-wallet.
+- Smoke round trip: miner paid exactly 40 tUSDC-TEST; minted = redeemed + paid + vault remainder; no shares left.
+  A second round on the same deployment pays exactly once more.
+- Adversarial: a miner wired to the depositor trips the miner-payment check first.
+
+`scripts/local_e2e.sh` repeats this against a real anvil node (chain id 46630, Cancun) through `scripts/rhc.sh`,
+checks six guard refusals (no key file, mode 644, symlink, key inside repo, malformed key, wrong chain id), and
+re-reads balances on chain with `cast`, a second method independent of the script's own simulation.
+
 ## Mutation check
-See [MUTATION.md](MUTATION.md): 15 deliberate bugs, one property or test catching each.
+See [MUTATION.md](MUTATION.md): 21 deliberate bugs, one property or test catching each.

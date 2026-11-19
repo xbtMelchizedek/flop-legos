@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 
 import {VaultFixture} from "../utils/VaultFixture.sol";
-import {ComputeVaultHandler} from "./ComputeVaultHandler.sol";
+import {FlopVaultHandler} from "./FlopVaultHandler.sol";
 
 /// Invariants, in words:
 /// 1. totalAssets == deposits - withdrawals - miner payouts (exact).
@@ -13,12 +13,12 @@ import {ComputeVaultHandler} from "./ComputeVaultHandler.sol";
 ///    Per actor this can fail by design: exiting while escrow is reserved forfeits that share to remaining holders.
 /// 6. Epoch spend never exceeds the cap; payouts equal the strategy's counter.
 /// 7. The contract never accepted a call the model forbids (breaches == 0).
-contract ComputeVaultInvariantTest is VaultFixture {
-    ComputeVaultHandler internal handler;
+contract FlopVaultInvariantTest is VaultFixture {
+    FlopVaultHandler internal handler;
 
     function setUp() public override {
         super.setUp();
-        handler = new ComputeVaultHandler(vault, strategy, flop, keeper, settler, miner);
+        handler = new FlopVaultHandler(vault, strategy, flop, keeper, settler, miner);
         targetContract(address(handler));
     }
 

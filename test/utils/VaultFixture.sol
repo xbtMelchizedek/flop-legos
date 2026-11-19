@@ -2,14 +2,14 @@
 pragma solidity 0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {ComputeVault} from "../../src/ComputeVault.sol";
+import {FlopVault} from "../../src/FlopVault.sol";
 import {MockComputeStrategy} from "../../src/mocks/MockComputeStrategy.sol";
 import {MockFLOP} from "../../src/mocks/MockFLOP.sol";
 
 abstract contract VaultFixture is Test {
     MockFLOP internal flop;
     MockComputeStrategy internal strategy;
-    ComputeVault internal vault;
+    FlopVault internal vault;
 
     address internal governor = makeAddr("governor");
     address internal keeper = makeAddr("keeper");
@@ -28,7 +28,7 @@ abstract contract VaultFixture is Test {
     function setUp() public virtual {
         flop = new MockFLOP();
         strategy = new MockComputeStrategy(address(flop), governor, keeper, settler, EPOCH_CAP, MAX_PRICE);
-        vault = new ComputeVault(address(flop), 18, strategy, governor, CAP);
+        vault = new FlopVault(address(flop), 18, strategy, governor, CAP);
         vm.startPrank(governor);
         strategy.setVault(address(vault));
         strategy.setMiner(miner, true);

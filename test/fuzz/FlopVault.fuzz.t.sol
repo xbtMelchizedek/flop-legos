@@ -4,7 +4,7 @@ pragma solidity 0.8.26;
 import {VaultFixture} from "../utils/VaultFixture.sol";
 
 /// Stateless properties, each checked against a second way of computing the expected value.
-contract ComputeVaultFuzzTest is VaultFixture {
+contract FlopVaultFuzzTest is VaultFixture {
     function _state(uint256 seed, uint256 allocated, uint256 escrow, uint256 workGn) internal {
         seed = bound(seed, 1, 1e27);
         _deposit(bob, seed);
