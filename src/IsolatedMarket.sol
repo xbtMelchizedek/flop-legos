@@ -167,6 +167,10 @@ contract IsolatedMarket is ReentrancyGuardTransient {
 
         repaidAssets = seized.fullMulDivUp(px, ORACLE_SCALE).divWadUp(lif);
         uint256 repaidShares = _toSharesDown(repaidAssets, totalBorrowAssets, totalBorrowShares);
+        // totalBorrowAssets is zero-floored, so after rounding it can sit below the sum of positions and a small
+        // denominator makes repaidShares exceed the position (fuzz finding: panic 0x11 at dust sizes). Cap it:
+        // the liquidator still pays repaidAssets for `seized`; any excess over the debt goes to suppliers.
+        if (repaidShares > p.borrowShares) repaidShares = p.borrowShares;
         p.collateral -= seized;
         p.borrowShares -= repaidShares;
         totalBorrowShares -= repaidShares;
