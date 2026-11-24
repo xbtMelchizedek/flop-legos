@@ -11,7 +11,7 @@ import {ReentrancyGuardTransient} from "solady/utils/ReentrancyGuardTransient.so
 import {IComputeStrategy} from "./interfaces/IComputeStrategy.sol";
 import {Owned2Step} from "./Owned2Step.sol";
 
-contract ComputeVault is ERC20, ReentrancyGuardTransient, Owned2Step {
+contract FlopVault is ERC20, ReentrancyGuardTransient, Owned2Step {
     using FixedPointMathLib for uint256;
 
     error ZeroShares();
@@ -146,11 +146,11 @@ contract ComputeVault is ERC20, ReentrancyGuardTransient, Owned2Step {
     // ---- views ----
 
     function name() public pure override returns (string memory) {
-        return "flop-legos compute vault (prototype)";
+        return "FlopVault compute vault (prototype)";
     }
 
     function symbol() public pure override returns (string memory) {
-        return "lcFLOP";
+        return "fvFLOP";
     }
 
     function decimals() public view override returns (uint8) {

@@ -2,14 +2,14 @@
 pragma solidity 0.8.26;
 
 import {Test} from "forge-std/Test.sol";
-import {ComputeVault} from "../../src/ComputeVault.sol";
+import {FlopVault} from "../../src/FlopVault.sol";
 import {MockComputeStrategy} from "../../src/mocks/MockComputeStrategy.sol";
 import {MockFLOP} from "../../src/mocks/MockFLOP.sol";
 
 /// Drives bounded calls from named actors, keeps an independent model, never reverts itself.
 /// breaches = the contract accepted what the model forbids; any revert on a model-allowed call fails the run.
-contract ComputeVaultHandler is Test {
-    ComputeVault public vault;
+contract FlopVaultHandler is Test {
+    FlopVault public vault;
     MockComputeStrategy public strategy;
     MockFLOP public flop;
     address public keeper;
@@ -28,7 +28,7 @@ contract ComputeVaultHandler is Test {
     uint256[] public openIds;
     mapping(uint256 => uint256) public escrowOf;
 
-    constructor(ComputeVault v, MockComputeStrategy s, MockFLOP f, address k, address st, address m) {
+    constructor(FlopVault v, MockComputeStrategy s, MockFLOP f, address k, address st, address m) {
         vault = v;
         strategy = s;
         flop = f;

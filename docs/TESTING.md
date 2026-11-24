@@ -6,7 +6,7 @@ the run. A model-forbidden call is tried, and if it is accepted it counts as a b
 
 ## Invariants (plain words)
 
-ComputeVault (`test/invariant/ComputeVault.invariant.t.sol`):
+FlopVault (`test/invariant/FlopVault.invariant.t.sol`):
 1. totalAssets equals deposits minus withdrawals minus miner payouts, exactly.
 2. Tokens held by the vault and strategy equal totalAssets plus donations. Donations never count.
 3. Strategy reserved equals the sum of open escrows in the model, and free plus reserved equals strategy totalAssets.
