@@ -7,9 +7,10 @@ Money legos for agent compute, sketched as Solidity. Two pieces:
 
 | contract | shape | what it does |
 |---|---|---|
-| `ComputeVault` | ERC-4626, yVault-style | Agents pool one compute budget. A keeper allocates it to a strategy that reserves escrow with allowlisted miners; a settlement verdict pays the miner for verified work and refunds the rest. |
+| `FlopVault` | ERC-4626, yVault-style | Agents pool one compute budget. A keeper allocates it to a strategy that reserves escrow with allowlisted miners; a settlement verdict pays the miner for verified work and refunds the rest. |
 | `MockComputeStrategy` | mock of a FLOP compute channel | escrow → verdict → miner paid at the channel price (rounded down) → remainder refunded; permissionless refund after timeout; per-epoch spend cap like FLOP's agent-wallet daily cap. |
 | `IsolatedMarket` | isolated lending market (shape learned from Morpho Blue, code ours) | One collateral, one loan asset, one oracle, fixed LLTV / incentive / rate, no owner. Bad debt is written off against suppliers. |
+| `StableMath` | StableSwap math library, no storage, no token | Invariant D and balance y for 2 or 3 balances normalized to one inference unit; swap quote rounded against the caller; refuses outside an operating envelope (A >= 10, balances 1e12 to 1e27, at most 1000:1) where integer Newton was shown by fuzzing to oscillate or overflow. Differential-tested against a bisection reference in `scripts/stable_ref.py`. A pool on top needs LP shares, which are a token, so it is not built. |
 | `BandedOracle` | two feeds, one band | Returns the primary price only if a second feed agrees within the band, both are fresh and nonzero. Otherwise reverts. |
 
 **Why Solidity if FLOP has no contracts?** FLOP is a Substrate L1 with no VM by design; its docs tell teams that need contracts to
