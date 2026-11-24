@@ -48,3 +48,7 @@ Invariants, fuzz properties and the mutation table: [docs/TESTING.md](docs/TESTI
 MIT. Vendored: Solady (MIT, `lib/solady`, unmodified) and forge-std (MIT/Apache-2.0). Patterns were learned by reading
 Yearn v3, Morpho Blue, Aave v3 and Uniswap v4-core, which are AGPL/GPL/BUSL; no code was copied from them.
 Security: see [SECURITY.md](SECURITY.md).
+
+## HyperEVM testnet (prepared, not deployed)
+
+`script/DeployHyperEVM.s.sol` plus fork tests in `test/fork/`. The deploy creates the `fvFLOP` share token, so it waits for the owner's approval. See [DEPLOY_HYPEREVM.md](DEPLOY_HYPEREVM.md).
